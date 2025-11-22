@@ -66,7 +66,7 @@ class Solution:
 
         # 4. Appliquer le changement et mettre à jour le score
         self.W[i, r] = new_value
-        self.score = new_score
+        self.score = round(new_score)
 
     def change_h_at(self, r: int, j: int, new_value: float):
         """
@@ -106,7 +106,7 @@ class Solution:
 
         # 4. Appliquer le changement et mettre à jour le score
         self.H[r, j] = new_value
-        self.score = new_score
+        self.score = round(new_score)
 
     def clone(self):
         new = Solution(self.W.copy(), self.H.copy())
