@@ -1,8 +1,9 @@
 import numpy as np
 
 def fobj(X,W,H):
-  f = np.linalg.norm(X-W@H,'fro')**2 #ou alors, sans NumPy : f = sum(sum((X-W@H)**2))
-  return f
+  residu = X-W@H
+  f = np.linalg.norm(residu,'fro')**2 #ou alors, sans NumPy : f = sum(sum((X-W@H)**2))
+  return f, residu
 
 def solutionIsFeasible(W,H,r,LW,UW,LH,UH):
   if W.shape[1] != r or H.shape[0] != r:
