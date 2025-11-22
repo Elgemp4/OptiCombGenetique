@@ -1,8 +1,17 @@
+import random
 import time
+from typing import Callable
+
 from parser import read_file
+from solution import Solution
 
 
-def genetic(file, duration, select_reproduction, cross, mutate, select_replacement, initiate_population):
+def genetic(file, duration,
+            select_reproduction: Callable[[list[Solution]],list[Solution]],
+            crossover: Callable[[Solution, Solution],tuple[Solution, Solution]],
+            mutate,
+            select_replacement,
+            initiate_population):
     X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)
     thousand_iteration = 0
     iteration = 0
@@ -14,7 +23,18 @@ def genetic(file, duration, select_reproduction, cross, mutate, select_replaceme
 
     while True:
         reproducing_population = select_reproduction(population)
-        new_childrens = cross(reproducing_population)
+
+        shuffled_population = reproducing_population[:]
+
+        random.shuffle(shuffled_population)
+
+        for i in range(len(shuffled_population) -1):
+            (child1, child2) = crossover(shuffled_population[i], shuffled_population[i+1])
+            child1.compute_score(X)
+            child2.compute_score(X)
+            population.append(child1)
+            population.append(child2)
+
 
         new_childrens = mutate(new_childrens)
         population.append(new_childrens)
