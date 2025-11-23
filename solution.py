@@ -114,6 +114,49 @@ class Solution:
         new.residu = self.residu.copy()
         return new
 
+    def change_w_row_at(self, i: int, new_row: np.ndarray):
+        """Met à jour la ligne i de W et le résidu E de manière incrémentale."""
+        old_row = self.W[i, :]
+        self.W[i, :] = new_row
+
+        # Mise à jour incrémentale du résidu E pour la ligne i :
+        # E_new = E_old - (W_i_new @ H) + (W_i_old @ H)
+        # E_new = E_old + (W_i_old - W_i_new) @ H
+
+        delta_W_row = old_row - new_row
+
+        # Calcul de la modification (1 x R) @ (R x N) = (1 x N)
+        update_term = delta_W_row @ self.H
+
+        # Mise à jour vectorielle de la ligne i du résidu
+        self.residu[i, :] += update_term
+
+        # Le score DOIT être recalculé après la mise à jour incrémentale
+        self.compute_score_from_residu()
+
+    def change_h_col_at(self, j: int, new_col: np.ndarray):
+        """Met à jour la colonne j de H et le résidu E de manière incrémentale."""
+        old_col = self.H[:, j]
+        self.H[:, j] = new_col
+
+        # Mise à jour incrémentale de la colonne j du résidu :
+        # E_new[:, j] = E_old[:, j] + W @ (H_old[:, j] - H_new[:, j])
+
+        delta_H_col = old_col - new_col
+
+        # Calcul de la modification (M x R) @ (R x 1) = (M x 1)
+        update_term = self.W @ delta_H_col
+
+        # Mise à jour vectorielle de la colonne j du résidu
+        self.residu[:, j] += update_term
+
+        self.compute_score_from_residu()
+
+    # Vous aurez besoin d'une nouvelle fonction pour mettre à jour le score à partir du résidu
+    def compute_score_from_residu(self):
+        """Recalcule le score à partir du résidu E après une modification incrémentale."""
+        self.score = np.linalg.norm(self.residu, ord='fro') ** 2
+
     def __eq__(self, other):
         return np.array_equal(self.W, other.W) and np.array_equal(self.H, other.H)
 

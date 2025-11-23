@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Add : fonctioning algorithm">
+    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Add : optimal performances for now">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/genetic.py" beforeDir="false" afterPath="$PROJECT_DIR$/genetic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/initiation.py" beforeDir="false" afterPath="$PROJECT_DIR$/initiation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mutate.py" beforeDir="false" afterPath="$PROJECT_DIR$/mutate.py" afterDir="false" />
@@ -47,21 +46,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.excours_5x5_r2_0202.txt.executor": "Run",
-    "Python.main.executor": "Debug",
-    "Python.main.py -m cProfile.executor": "Debug",
-    "Python.main.py .executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/elgem/PycharmProjects/OptiCombGenetique/main.py",
-    "settings.editor.selected.configurable": "configurable.group.appearance"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.excours_5x5_r2_0202.txt.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.main.py -m cProfile.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.main.py .executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/elgem/PycharmProjects/OptiCombGenetique/main.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.appearance&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main.py " type="PythonConfigurationType" factoryName="Python">
       <module name="OptiCombGenetique" />
@@ -127,7 +126,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763838855819</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add : optimal performances for now">
+      <option name="closed" value="true" />
+      <created>1763851362681</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1763851362681</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -135,7 +142,8 @@
     <MESSAGE value="Add : algorithm structure" />
     <MESSAGE value="Add : mutation, reproduction selection and crossover" />
     <MESSAGE value="Add : fonctioning algorithm" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add : fonctioning algorithm" />
+    <MESSAGE value="Add : optimal performances for now" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add : optimal performances for now" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

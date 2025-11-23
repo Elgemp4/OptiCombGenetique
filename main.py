@@ -19,9 +19,9 @@ def enter_point(file):
             select_replacement=select_replacement,
             duration=15,
             crossover=uniform_crossover,
-            initiate_population=initiate_algo,
+            initiate_population=initiate_randomly,
             mutate=sparse_mutation,
-            reproduce_count=20,
+            reproduce_count=50,
             select_count=100,
             initial_count=100)
 
@@ -36,7 +36,43 @@ def enter_point(file):
 
     print(solutionIsFeasible(best.get_W(), best.get_H(), rank, lower_w, upper_w, lower_h, upper_h))
 
+    import numpy as np
+    import matplotlib.pyplot as plt
 
+    # 1. Reconstruire la matrice finale (Produit Matriciel)
+    # L'opérateur '@' fait la multiplication matricielle (dot product)
+    x_recontructed = best.get_W() @ best.get_H()
+
+    # Si vous n'utilisez pas Python 3.5+, utilisez : np.dot(W_best, H_best)
+
+    # 2. Afficher le résultat
+    plt.figure(figsize=(12, 6))
+
+    # --- Image A : La matrice Originale (Cible) ---
+    plt.subplot(1, 3, 1)
+    plt.title("Originale (Cible)")
+    # 'cmap' définit les couleurs (ex: 'gray', 'viridis', 'plasma')
+    plt.imshow(X, cmap='viridis', aspect='auto')
+    plt.savefig("original.png")
+    plt.colorbar()
+
+    # --- Image B : La matrice Reconstruite (Résultat) ---
+    plt.subplot(1, 3, 2)
+    plt.title("Reconstruction (W x H)")
+    plt.imshow(x_recontructed, cmap='viridis', aspect='auto')
+    plt.savefig("reconstructed.png")
+    plt.colorbar()
+
+    # --- Image C : La différence (L'erreur visible) ---
+    # C'est très utile pour voir ce que l'algo a raté
+    plt.subplot(1, 3, 3)
+    plt.title("Différence (Erreur)")
+    plt.imshow(np.abs(X - x_recontructed), cmap='magma', aspect='auto')
+    plt.savefig("error.png")
+    plt.colorbar()
+
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__ == '__main__':

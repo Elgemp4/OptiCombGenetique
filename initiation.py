@@ -57,40 +57,7 @@ def factorize_and_quantize(X, rank, lower_w, higher_w, lower_h, higher_h, method
 
 def initiate_randomly(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
     population = []
-
-    # --- 🎯 NOUVELLE PARTIE : Initialisation Biaisée (Factorisation) ---
-
-    # 1. Déterminer la méthode de factorisation
-    if np.any(X < 0):
-        # Si X contient des négatifs, on utilise la SVD
-        method = 'svd'
-    else:
-        # Si X est non-négative, la NMF est préférable
-        method = 'nmf'
-
-    print(f"Génération d'une solution par {method.upper()}...")
-
-    try:
-        W_fact, H_fact = factorize_and_quantize(
-            X, rank, lower_w, higher_w, lower_h, higher_h, method=method
-        )
-
-        # 2. Créer l'objet Solution et l'ajouter
-        sol_fact = Solution(W_fact, H_fact)
-        sol_fact.compute_score(X)
-        population.append(sol_fact)
-
-        # S'assurer que le nombre total d'individus reste 'count'
-        remaining_count = count - 1
-
-    except Exception as e:
-        # En cas d'erreur de factorisation (ex: rang trop grand pour SVD)
-        print(f"Erreur lors de la factorisation : {e}. On continue avec une population aléatoire complète.")
-        remaining_count = count
-
-    # --- PARTIE EXISTANTE : Remplissage avec des solutions Aléatoires ---
-
-    for i in range(remaining_count):
+    for i in range(count):
         # Utilisation de np.random.randint pour les valeurs entières dans les bornes
         w = np.random.randint(lower_w, higher_w + 1, (m, rank))
         h = np.random.randint(lower_h, higher_h + 1, (rank, n))
@@ -107,7 +74,7 @@ def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
     # --- Solutions basées sur NMF/SVD ---
     method = 'nmf' if np.all(X >= 0) else 'svd'
 
-    for k in range(5):
+    for k in range(50):
         # Utiliser un seed différent ou laisser la fonction NMF/SVD
         # (si init='random') générer un départ aléatoire différent.
         try:
