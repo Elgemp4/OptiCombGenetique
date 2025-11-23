@@ -16,6 +16,7 @@ class Solution:
         """Calcule le score initial et le résidu (à appeler au moins une fois)."""
         # Assurez-vous que fobj renvoie bien (score, residu)
         self.score, self.residu = fobj(X, self.W, self.H)
+        self.score = round(self.score)
 
     def get_W(self) -> np.ndarray:
         return self.W
@@ -155,7 +156,7 @@ class Solution:
     # Vous aurez besoin d'une nouvelle fonction pour mettre à jour le score à partir du résidu
     def compute_score_from_residu(self):
         """Recalcule le score à partir du résidu E après une modification incrémentale."""
-        self.score = np.linalg.norm(self.residu, ord='fro') ** 2
+        self.score = round(np.linalg.norm(self.residu, ord='fro') ** 2)
 
     def __eq__(self, other):
         return np.array_equal(self.W, other.W) and np.array_equal(self.H, other.H)

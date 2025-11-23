@@ -5,7 +5,7 @@ import click
 from crossover import two_point_crossover, one_point_crossover, uniform_crossover
 from genetic import genetic
 from initiation import initiate_randomly, initiate_algo
-from mutate import mutate_local_search_addition, mutate, gradient_mutation, sparse_mutation
+from mutate import mutate_local_search_addition, mutate, gradient_mutation, sparse_mutation, stochastic_hill_climbing
 from parser import read_file
 from select_population import roulette_selection, select_replacement
 from utils import solutionIsFeasible
@@ -15,15 +15,16 @@ from utils import solutionIsFeasible
 @click.argument("file")
 def enter_point(file):
     best = genetic(file=file,
-            select_reproduction=roulette_selection,
-            select_replacement=select_replacement,
-            duration=15,
-            crossover=uniform_crossover,
-            initiate_population=initiate_randomly,
-            mutate=sparse_mutation,
-            reproduce_count=50,
-            select_count=100,
-            initial_count=100)
+                   select_reproduction=roulette_selection,
+                   select_replacement=select_replacement,
+                   duration=180,
+                   crossover=uniform_crossover,
+                   initiate_population=initiate_algo,
+                   mutate_search=sparse_mutation,
+                   mutate_intensify=stochastic_hill_climbing,
+                   reproduce_count=100,
+                   select_count=500,
+                   initial_count=200)
 
 
     X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)

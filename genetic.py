@@ -10,7 +10,8 @@ from solution import Solution
 def genetic(file, duration,
             select_reproduction: Callable[[list[Solution], int],list[Solution]],
             crossover: Callable[[Solution, Solution, int, int, int],tuple[Solution, Solution]],
-            mutate,
+            mutate_search,
+            mutate_intensify,
             select_replacement,
             initiate_population,
             initial_count,
@@ -27,6 +28,13 @@ def genetic(file, duration,
     limit_sec = duration * 60
     start_time = time.perf_counter()
 
+    method=""
+    last_score=0
+    intensification_threshold = 200000
+    under_threshold_count = 0
+    mutate = mutate_search
+
+
     best_solution = None
     try:
         while True:
@@ -40,6 +48,12 @@ def genetic(file, duration,
                 (child1, child2) = crossover(shuffled_population[i], shuffled_population[i+1], m, n, rank)
                 child1.compute_score(X)
                 child2.compute_score(X)
+                if random.random() < 0.5:
+                    method= "search"
+                    mutate = mutate_search
+                else:
+                    method = "intensify"
+                    mutate = mutate_intensify
                 child1 = mutate(child1, lower_w, upper_w, lower_h, upper_h, X)
                 child2 = mutate(child2, lower_w, upper_w, lower_h, upper_h, X)
                 population.append(child1)
@@ -51,7 +65,15 @@ def genetic(file, duration,
                     score_historic.append(pop.score)
                     time_historic.append(time.perf_counter() - start_time)
                     best_solution = pop
-                    print(f"New best solution with cost : {0}", best_solution.score)
+                    print(f"New best solution with cost : {best_solution.score}, ({last_score - best_solution.score}) - {method}")
+                    #if last_score - best_solution.score < intensification_threshold:
+                    #    under_threshold_count = under_threshold_count + 1
+                    #    if under_threshold_count >= 10 and mutate != mutate_intensify:
+                    #        print("intensify")
+                    #        mutate = mutate_intensify
+                    #else:
+                    #    under_threshold_count = 0
+                    last_score = best_solution.score
                     if(best_solution.score == 0):
                         break;
 
