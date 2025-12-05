@@ -77,14 +77,9 @@ def genetic(file, duration,
                     if(best_solution.score == 0):
                         break;
 
-            iteration = iteration + 1
-            if iteration % 1000 == 0:
-                thousand_iteration = thousand_iteration + 1
-                iteration = 0
-                print("hundred iterations")
-                if time.perf_counter() - start_time > limit_sec:
-                    print("stop")
-                    break
+            if time.perf_counter() - start_time > limit_sec:
+                print("stop")
+                break
 
         plot_score_evolution(score_historic,time_historic)
         return best_solution

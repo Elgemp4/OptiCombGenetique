@@ -17,14 +17,14 @@ def enter_point(file):
     best = genetic(file=file,
                    select_reproduction=roulette_selection,
                    select_replacement=select_replacement,
-                   duration=180,
+                   duration=10,
                    crossover=uniform_crossover,
                    initiate_population=initiate_algo,
                    mutate_search=sparse_mutation,
                    mutate_intensify=stochastic_hill_climbing,
-                   reproduce_count=100,
-                   select_count=500,
-                   initial_count=200)
+                   reproduce_count=4,
+                   select_count=100,
+                   initial_count=100)
 
 
     X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)

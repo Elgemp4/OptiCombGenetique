@@ -27,54 +27,36 @@ from solution import Solution
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
                              X: np.ndarray, iterations=1000):
-    """
-    Applies Stochastic Hill Climbing using the incremental update methods of the Solution class.
-    Strategy: "Tentative Move" -> If score improves, keep it. If not, revert immediately.
-    """
-
-    # Pre-fetch dimensions to avoid calling len() inside the loop
-    # We access the arrays directly for reading speed
     W = solution.get_W()
     H = solution.get_H()
 
     M, R = W.shape
     R, N = H.shape
 
-    # We track the current best score locally to compare quickly
     current_best_score = solution.score
 
     for _ in range(iterations):
 
-        # 50% chance to modify W, 50% chance to modify H
         if random.random() < 0.5:
-            # --- MODIFY W ---
             i = random.randint(0, M - 1)
             r = random.randint(0, R - 1)
 
             old_val = W[i, r]
 
-            # Try +1 or -1
             delta = random.choice([-1, 1])
             new_val = old_val + delta
 
-            # Check bounds (Clamping)
             if not (lower_w <= new_val <= higher_w):
                 continue
 
-            # 1. APPLY (Incremental Update)
             solution.change_w_at(i, r, new_val)
 
-            # 2. CHECK & DECIDE
             if solution.score < current_best_score:
-                # Improvement: Update local tracker and continue
                 current_best_score = solution.score
             else:
-                # Degradation or Stagnation: REVERT immediately
-                # Reverting uses the same incremental logic, so it's mathematically consistent
                 solution.change_w_at(i, r, old_val)
 
         else:
-            # --- MODIFY H ---
             r = random.randint(0, R - 1)
             j = random.randint(0, N - 1)
 
@@ -86,10 +68,8 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
             if not (lower_h <= new_val <= higher_h):
                 continue
 
-            # 1. APPLY
             solution.change_h_at(r, j, new_val)
 
-            # 2. CHECK & DECIDE
             if solution.score < current_best_score:
                 current_best_score = solution.score
             else:
@@ -227,7 +207,7 @@ def block_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int
     Effectue une mutation par bloc (ligne de W ou colonne de H) en appliquant
     un pas d'optimisation vectoriel.
     """
-    for i in range(100):
+    for i in range(5):
         E = solution.residu
         E_abs = np.abs(E)
         W = solution.get_W()
