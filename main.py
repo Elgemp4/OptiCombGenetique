@@ -5,7 +5,8 @@ import click
 from crossover import two_point_crossover, one_point_crossover, uniform_crossover
 from genetic import genetic
 from initiation import initiate_randomly, initiate_algo
-from mutate import mutate_local_search_addition, mutate, gradient_mutation, sparse_mutation, stochastic_hill_climbing
+from mutate import mutate_local_search_addition, mutate, gradient_mutation, sparse_mutation, stochastic_hill_climbing, \
+    block_mutation
 from parser import read_file
 from select_population import roulette_selection, select_replacement
 from utils import solutionIsFeasible
@@ -20,9 +21,9 @@ def enter_point(file):
                    duration=10,
                    crossover=uniform_crossover,
                    initiate_population=initiate_algo,
-                   mutate_search=sparse_mutation,
+                   mutate_search=block_mutation,
                    mutate_intensify=stochastic_hill_climbing,
-                   reproduce_count=100,
+                   reproduce_count=110,
                    select_count=200,
                    initial_count=300)
 

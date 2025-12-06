@@ -26,7 +26,7 @@ from solution import Solution
 
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
-                             X: np.ndarray, iterations=5000):
+                             X: np.ndarray, iterations=1000):
     W = solution.get_W()
     H = solution.get_H()
 
@@ -126,7 +126,7 @@ def mutate(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher
     return solution
 
 def gradient_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
-    for i in range(100):
+    for i in range(1):
         E = solution.residu
         E_abs = np.abs(E)
         W = solution.get_W()
