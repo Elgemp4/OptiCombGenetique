@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 
 from solution import Solution
@@ -68,15 +70,13 @@ def initiate_randomly(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count
     return population
 
 
-def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
-    population = []
+def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h):
+    population = None
 
     # --- Solutions basées sur NMF/SVD ---
     method = 'nmf' if np.all(X >= 0) else 'svd'
 
-    for k in range(30):
-        # Utiliser un seed différent ou laisser la fonction NMF/SVD
-        # (si init='random') générer un départ aléatoire différent.
+    if random.random() < 0.3:
         try:
             W_fact, H_fact = factorize_and_quantize(
                 X, rank, lower_w, higher_w, lower_h, higher_h, method=method
@@ -84,24 +84,15 @@ def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
             sol_fact = Solution(W_fact, H_fact)
             sol_fact.compute_score(X)
 
-            # S'assurer de ne pas ajouter de doublons (peu probable avec NMF)
-            if sol_fact not in population:
-                population.append(sol_fact)
+            population = sol_fact
 
         except Exception as e:
-            print(f"Erreur lors de la factorisation ({k + 1}/{num_factorized}) : {e}")
-
-
-    remaining_count = count
-
-    # --- PARTIE EXISTANTE : Remplissage avec des solutions Aléatoires ---
-
-    for i in range(remaining_count - 30):
-        # Utilisation de np.random.randint pour les valeurs entières dans les bornes
+            print(f"Erreur lors de la factorisation () : {e}")
+    else:
         w = np.random.randint(lower_w, higher_w + 1, (m, rank))
         h = np.random.randint(lower_h, higher_h + 1, (rank, n))
         sol = Solution(w, h)
         sol.compute_score(X)
-        population.append(sol)
+        population = sol
 
     return population

@@ -22,9 +22,9 @@ def enter_point(file):
                    initiate_population=initiate_algo,
                    mutate_search=sparse_mutation,
                    mutate_intensify=stochastic_hill_climbing,
-                   reproduce_count=4,
-                   select_count=100,
-                   initial_count=100)
+                   reproduce_count=100,
+                   select_count=200,
+                   initial_count=300)
 
 
     X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)

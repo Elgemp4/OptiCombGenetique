@@ -1,11 +1,40 @@
 import random
 import time
+from concurrent.futures.process import ProcessPoolExecutor
 from typing import Callable
 
 import matplotlib.pyplot as plt
 from parser import read_file
 from solution import Solution
 
+
+def worker_create_one(args):
+    """
+    Creates ONE individual and computes its score.
+    """
+    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X) = args
+
+    random.seed(seed_val)
+
+    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h)
+
+    return sol
+
+
+def worker_process_offspring(args):
+    """
+    Mutates ONE child and computes its score.
+    """
+    (child, mutation_func, lower_w, upper_w, lower_h, upper_h, X) = args
+    child.compute_score(X)
+    # 1. Mutate
+    # (No need to re-seed here as we are transforming existing data)
+    child = mutation_func(child, lower_w, upper_w, lower_h, upper_h, X)
+
+    # 2. Score
+    child.compute_score(X)
+
+    return child
 
 def genetic(file, duration,
             select_reproduction: Callable[[list[Solution], int],list[Solution]],
@@ -17,72 +46,69 @@ def genetic(file, duration,
             initial_count,
             reproduce_count,
             select_count):
-    X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)
-    thousand_iteration = 0
-    iteration = 0
-
-    score_historic = []
-    time_historic = []
-    population = initiate_population(X, m, n, rank, lower_w, upper_w, lower_h, upper_h, initial_count)
-
-    limit_sec = duration * 60
-    start_time = time.perf_counter()
-
-    method=""
-    last_score=0
-    intensification_threshold = 200000
-    under_threshold_count = 0
-    mutate = mutate_search
-
-
     best_solution = None
     try:
-        while True:
-            reproducing_population = select_reproduction(population, reproduce_count)
+        with ProcessPoolExecutor() as executor:
+            X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)
 
-            shuffled_population = reproducing_population[:]
+            score_historic = []
+            time_historic = []
 
-            random.shuffle(shuffled_population)
+            limit_sec = duration * 60
+            start_time = time.perf_counter()
 
-            for i in range(len(shuffled_population) -1):
-                (child1, child2) = crossover(shuffled_population[i], shuffled_population[i+1], m, n, rank)
-                child1.compute_score(X)
-                child2.compute_score(X)
-                if random.random() < 0.5:
-                    method= "search"
-                    mutate = mutate_search
-                else:
-                    method = "intensify"
-                    mutate = mutate_intensify
-                child1 = mutate(child1, lower_w, upper_w, lower_h, upper_h, X)
-                child2 = mutate(child2, lower_w, upper_w, lower_h, upper_h, X)
-                population.append(child1)
-                population.append(child2)
-            population = select_replacement(population, select_count)
+            method = ""
+            last_score = 0
 
-            for pop in population:
-                if best_solution is None or pop.score < best_solution.score:
-                    score_historic.append(pop.score)
-                    time_historic.append(time.perf_counter() - start_time)
-                    best_solution = pop
-                    print(f"New best solution with cost : {best_solution.score}, ({last_score - best_solution.score}) - {method}")
-                    #if last_score - best_solution.score < intensification_threshold:
-                    #    under_threshold_count = under_threshold_count + 1
-                    #    if under_threshold_count >= 10 and mutate != mutate_intensify:
-                    #        print("intensify")
-                    #        mutate = mutate_intensify
-                    #else:
-                    #    under_threshold_count = 0
-                    last_score = best_solution.score
-                    if(best_solution.score == 0):
-                        break;
+            init_tasks = []
+            for i in range(initial_count):
+                # We pass 'time + i' to ensure every worker gets a unique random seed
+                seed_val = time.time() + i
+                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X))
 
-            if time.perf_counter() - start_time > limit_sec:
-                print("stop")
-                break
+            population = list(executor.map(worker_create_one, init_tasks))
 
-        plot_score_evolution(score_historic,time_historic)
-        return best_solution
+            while True:
+                reproducing_population = select_reproduction(population, reproduce_count)
+
+                shuffled_population = reproducing_population[:]
+
+                random.shuffle(shuffled_population)
+                evolution_tasks = []
+
+                for i in range(len(shuffled_population) -1):
+                    (child1, child2) = crossover(shuffled_population[i], shuffled_population[i+1], m, n, rank)
+                    if random.random() < .5:
+                        method= "search"
+                        mutate = mutate_search
+                    else:
+                        method = "intensify"
+                        mutate = mutate_intensify
+
+                    evolution_tasks.append((child1, mutate, lower_w, upper_w, lower_h, upper_h, X))
+                    evolution_tasks.append((child2, mutate, lower_w, upper_w, lower_h, upper_h, X))
+
+
+                new_childs = list(executor.map(worker_process_offspring, evolution_tasks))
+                population.extend(new_childs)
+                population = select_replacement(population, select_count)
+
+                for pop in population:
+                    if best_solution is None or pop.score < best_solution.score:
+                        score_historic.append(pop.score)
+                        time_historic.append(time.perf_counter() - start_time)
+                        best_solution = pop
+                        print(f"New best solution with cost : {best_solution.score}, ({last_score - best_solution.score}) - {method}")
+                        last_score = best_solution.score
+                        if(best_solution.score == 0):
+                            break;
+
+                if time.perf_counter() - start_time > limit_sec:
+                    print("stop")
+                    break
+
+            plot_score_evolution(score_historic,time_historic)
+            return best_solution
     except (KeyboardInterrupt):
 
         plot_score_evolution(score_historic,time_historic)
