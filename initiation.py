@@ -74,7 +74,7 @@ def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
     # --- Solutions basées sur NMF/SVD ---
     method = 'nmf' if np.all(X >= 0) else 'svd'
 
-    for k in range(30):
+    for k in range(10):
         # Utiliser un seed différent ou laisser la fonction NMF/SVD
         # (si init='random') générer un départ aléatoire différent.
         try:
@@ -96,7 +96,7 @@ def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
 
     # --- PARTIE EXISTANTE : Remplissage avec des solutions Aléatoires ---
 
-    for i in range(remaining_count - 30):
+    for i in range(remaining_count - 10):
         # Utilisation de np.random.randint pour les valeurs entières dans les bornes
         w = np.random.randint(lower_w, higher_w + 1, (m, rank))
         h = np.random.randint(lower_h, higher_h + 1, (rank, n))
