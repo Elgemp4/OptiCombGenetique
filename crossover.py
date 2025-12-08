@@ -4,6 +4,16 @@ from solution import Solution
 
 
 def uniform_crossover(parent1, parent2, m,n, rank):
+    """
+    Performs a uniform crossover between parent1 and parent2
+    Creating two new distinct childrens
+    :param parent1:
+    :param parent2:
+    :param m:
+    :param n:
+    :param rank:
+    :return:
+    """
     #Reusable crossover logic
     def array_crossover(parent1, parent2, rank, width):
         mask = np.random.rand(width) > 0.5
