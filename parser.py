@@ -13,3 +13,10 @@ def read_file(filename="donnee.txt"):
         X.append(ligne)
 
     return np.array(X), m, n, r, LW, UW, LH, UH
+
+
+def write_output(filepath, solution):
+    with open(filepath, 'w') as f:
+        f.write(f"{solution.score}\n")
+        np.savetxt(f, solution.get_W(), fmt='%d')
+        np.savetxt(f, solution.get_H(), fmt='%d')

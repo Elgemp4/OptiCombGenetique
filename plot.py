@@ -2,32 +2,41 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_images_comparison(X, x_recontructed):
+    """
+    Display the different images (the original, the reconstruction and the difference between them)
+    :param X:
+    :param x_recontructed:
+    :return:
+    """
     plt.figure(figsize=(12, 6))
 
     plt.subplot(1, 3, 1)
-    plt.title("Originale (Cible)")
+    plt.title("Originale (X)")
     plt.imshow(X, cmap='viridis', aspect='auto')
-    plt.savefig("original.png")
     plt.colorbar()
 
     plt.subplot(1, 3, 2)
     plt.title("Reconstruction (W x H)")
     plt.imshow(x_recontructed, cmap='viridis', aspect='auto')
-    plt.savefig("reconstructed.png")
     plt.colorbar()
 
     plt.subplot(1, 3, 3)
-    plt.title("Différence (Erreur)")
+    plt.title("Différence (L = X - W X H)")
     plt.imshow(np.abs(X - x_recontructed), cmap='magma', aspect='auto')
-    plt.savefig("error.png")
     plt.colorbar()
 
     plt.tight_layout()
+
+    plt.savefig("./output/images.png")
     plt.show()
 
 def plot_score_evolution(score_history, time_history, y_label='Score (Erreur L)'):
     """
     Create the graphics of the evolution of the best score through time
+    :param score_history:
+    :param time_history:
+    :param y_label:
+    :return:
     """
     fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -39,7 +48,7 @@ def plot_score_evolution(score_history, time_history, y_label='Score (Erreur L)'
 
     ax.grid(True, linestyle='--', alpha=0.7)
 
-    filename = "evolution_score.png"
+    filename = "./output/evolution_score.png"
     plt.savefig(filename)
 
     print(f"\nGraphique enregistré sous : {filename}")

@@ -1,11 +1,12 @@
 import click
+from pathlib import Path
 
 from crossover import  uniform_crossover
 from genetic import genetic
 from initiation import  initiate_algo
 from mutate import stochastic_hill_climbing, \
     gradient_mutation
-from parser import read_file
+from parser import read_file, write_output
 from plot import plot_images_comparison
 from select_population import roulette_selection, select_replacement
 from utils import solutionIsFeasible
@@ -14,6 +15,7 @@ from utils import solutionIsFeasible
 @click.command()
 @click.argument("file")
 def enter_point(file):
+
     best = genetic(file=file,
                    select_reproduction=roulette_selection,
                    select_replacement=select_replacement,
@@ -36,6 +38,8 @@ def enter_point(file):
     print(best.score)
 
     print(solutionIsFeasible(best.get_W(), best.get_H(), rank, lower_w, upper_w, lower_h, upper_h))
+
+    write_output(f"./output/{Path(file).stem}.out.txt", best)
 
     x_recontructed = best.get_W() @ best.get_H()
     plot_images_comparison(X, x_recontructed)
