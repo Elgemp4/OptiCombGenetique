@@ -5,25 +5,26 @@ from typing import Callable
 
 import matplotlib.pyplot as plt
 from parser import read_file
+from plot import plot_score_evolution
 from solution import Solution
 
 
-def worker_create_one(args):
+def create_one_individu_process(args):
     """
-    Creates ONE individual and computes its score.
+    Create one individual and computes it's score.
     """
-    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X) = args
+    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, method) = args
 
     random.seed(seed_val)
 
-    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h)
+    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h, method)
 
     return sol
 
 
-def worker_process_offspring(args):
+def process_children_process(args):
     """
-    Mutates ONE child and computes its score.
+    Mutates ONE child and computes it's score.
     """
     (child, mutation_func, lower_w, upper_w, lower_h, upper_h, X) = args
     child.compute_score(X)
@@ -61,12 +62,21 @@ def genetic(file, duration,
             last_score = 0
 
             init_tasks = []
+            methods = ["nmf", "svd", "lu", "qr", "ica", "pca"]
             for i in range(initial_count):
                 # We pass 'time + i' to ensure every worker gets a unique random seed
-                seed_val = time.time() + i
-                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X))
+                if i < len(methods):
+                    method = methods[i]
+                else:
+                    if random.random() < .1:
+                        method="nmf"
+                    else:
+                        method = "random"
 
-            population = list(executor.map(worker_create_one, init_tasks))
+                seed_val = time.time() + i
+                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, method))
+
+            population = list(executor.map(create_one_individu_process, init_tasks))
 
             while True:
                 reproducing_population = select_reproduction(population, reproduce_count)
@@ -89,7 +99,7 @@ def genetic(file, duration,
                     evolution_tasks.append((child2, mutate, lower_w, upper_w, lower_h, upper_h, X))
 
 
-                new_childs = list(executor.map(worker_process_offspring, evolution_tasks))
+                new_childs = list(executor.map(process_children_process, evolution_tasks))
                 population.extend(new_childs)
                 population = select_replacement(population, select_count)
 
@@ -110,41 +120,5 @@ def genetic(file, duration,
             plot_score_evolution(score_historic,time_historic)
             return best_solution
     except (KeyboardInterrupt):
-
         plot_score_evolution(score_historic,time_historic)
         return best_solution
-
-
-
-
-def plot_score_evolution(score_history, time_history, y_label='Score (Erreur L)'):
-    """
-    Crée le graphique de l'évolution du score en fonction du temps.
-    """
-
-    # Créer la figure et l'axe
-    fig, ax = plt.subplots(figsize=(10, 6))
-
-    # Tracer les données (Score vs. Temps)
-    ax.plot(time_history, score_history, marker='o', linestyle='-', color='b', markersize=3)
-
-    # Ajouter des labels et un titre
-    ax.set_title("Évolution du Meilleur Score au fil du Temps", fontsize=14)
-    ax.set_xlabel("Temps écoulé (secondes)", fontsize=12)
-    ax.set_ylabel(y_label, fontsize=12)
-
-    # Ajouter une grille pour faciliter la lecture
-    ax.grid(True, linestyle='--', alpha=0.7)
-
-    # Mettre l'axe Y à l'échelle logarithmique si le score change énormément
-    # (Utile si vous commencez à 300 millions et finissez à 1 million)
-    # ax.set_yscale('log')
-    filename = "evolution_score.png"
-    plt.savefig(filename)
-
-    print(f"\nGraphique enregistré sous : {filename}")
-    # Afficher le graphique
-    plt.show()
-
-# --- Appel de la fonction de tracé après la boucle ---
-# plot_score_evolution(score_history, time_history)

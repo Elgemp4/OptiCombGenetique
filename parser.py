@@ -1,7 +1,6 @@
 import numpy as np
 
 def read_file(filename="donnee.txt"):
-
     with open(filename, 'r') as f:
         lines = f.readlines()
 

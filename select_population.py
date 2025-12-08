@@ -1,12 +1,21 @@
 import random
 import numpy as np
 
-def roulette_selection(population, count ):
+def roulette_selection(population, count, factor=0.8 ):
+    """
+    Roulette selection, the lower the factor argument, the more less idea solutions will be chosed
+    :param population:
+    :param count:
+    :param factor:
+    :return:
+    """
     scores = np.array(list(map(lambda x: x.score, population)))
 
     max_score = np.max(scores)
 
     weights = max_score - scores + 1
+
+    weights = np.power(weights, factor)
 
     return random.choices(population, weights=weights, k=count)
 
@@ -15,7 +24,6 @@ def select_replacement(combined_population, max_size):
     """
     Selects the best individuals, removing duplicates.
     """
-    # 1. Sort the entire population by score (e.g., ascending for minimization)
     sorted_population = sorted(combined_population, key=lambda x: x.score)
 
     final_population = []
@@ -30,6 +38,3 @@ def select_replacement(combined_population, max_size):
             seen_hashes.add(individual_hash)
 
     return final_population
-
-# Your main loop:
-# population = select_replacement(population, 50)
