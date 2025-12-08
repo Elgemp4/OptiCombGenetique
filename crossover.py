@@ -22,12 +22,12 @@ def uniform_crossover(parent1, parent2, m,n, rank):
         child2 = np.empty((rank, width))
 
         # Creating child 1
-        child1 = parent1[:, mask] #Inherit genes from parent 1
-        child1 = parent2[:, ~mask] #Inherit genes from parent 2
+        child1[:, mask] = parent1[:, mask] #Inherit genes from parent 1
+        child1[:, ~mask] = parent2[:, ~mask] #Inherit genes from parent 2
 
         # Creating child 2
-        child2 = parent1[:, ~mask] #Inherit genes from parent 1
-        child2 = parent2[:, mask]  #Inherit genes from parent 2
+        child2[:, ~mask] = parent1[:, ~mask] #Inherit genes from parent 1
+        child2[:, mask] = parent2[:, mask]  #Inherit genes from parent 2
 
         return child1, child2
 
@@ -37,7 +37,7 @@ def uniform_crossover(parent1, parent2, m,n, rank):
     parent2_h = parent2.get_H()
 
     child1_w, child2_w = array_crossover(parent1_w, parent2_w, rank, m)
-    child1_h, child2_h = array_crossover(parent1_h, parent2_h, rank, m)
+    child1_h, child2_h = array_crossover(parent1_h, parent2_h, rank, n)
 
     child1 = Solution(child1_w.T, child1_h)
     child2 = Solution(child1_w.T, child2_h)
