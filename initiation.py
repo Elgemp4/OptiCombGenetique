@@ -1,98 +1,65 @@
-import random
-
 import numpy as np
+from scipy.linalg import lu, qr
 
 from solution import Solution
-from sklearn.decomposition import NMF, TruncatedSVD
+from sklearn.decomposition import NMF, TruncatedSVD, PCA, FastICA
 
-def factorize_and_quantize(X, rank, lower_w, higher_w, lower_h, higher_h, method='nmf'):
-    """
-    Factorise X et quantifie les facteurs W et H aux entiers.
-
-    Args:
-        X (np.ndarray): Matrice d'entrée (M x N).
-        rank (int): Le rang R souhaité.
-        lower_w, higher_w (int): Bornes pour W.
-        lower_h, higher_h (int): Bornes pour H.
-        method (str): 'nmf' (par défaut, nécessite X >= 0) ou 'svd'.
-
-    Returns:
-        tuple: (W_entier, H_entier)
-    """
-    m, n = X.shape
-
+def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, method):
     if method == 'nmf':
-        # NMF est préférée si X >= 0 car elle produit naturellement des facteurs non-négatifs.
-        if np.any(X < 0):
-            print("Attention : NMF est utilisée mais X contient des valeurs négatives. Utilisation de SVD à la place.")
-            return factorize_and_quantize(X, rank, lower_w, higher_w, lower_h, higher_h, method='svd')
+        # If NMF is not available (because there is a negative value in X, then use SVD)
+        if (X < 0).any():
+            svd = TruncatedSVD(n_components=rank)
+            W_float = svd.fit_transform(X)
+            Sigma = np.diag(svd.singular_values_)
+            H_float = svd.components_
 
-        model = NMF(n_components=rank, init='random', max_iter=50000)
-        W_float = model.fit_transform(X)
-        H_float = model.components_
+            W_float = W_float @ np.sqrt(Sigma)
+            H_float = np.sqrt(Sigma) @ H_float
+        else:
+            model = NMF(n_components=rank, init='random', max_iter=50000)
+            W_float = model.fit_transform(X)
+            H_float = model.components_
 
     elif method == 'svd':
-        # SVD Troncquée pour les matrices générales (contient des valeurs négatives si X en a).
-        # Création des facteurs W et H pour X ≈ W @ H
         svd = TruncatedSVD(n_components=rank)
         W_float = svd.fit_transform(X)
         Sigma = np.diag(svd.singular_values_)
         H_float = svd.components_
 
-        # Pour le format W @ H, on peut intégrer la matrice Sigma à l'un des facteurs.
         W_float = W_float @ np.sqrt(Sigma)
         H_float = np.sqrt(Sigma) @ H_float
+    elif method == 'pca':
+        pca = PCA(n_components=rank)
+        W_float = pca.fit_transform(X)
+        H_float = pca.components_
+    elif method == 'ica':
+        ica = FastICA(n_components=rank, max_iter=1000, random_state=42)
+        W_float = ica.fit_transform(X)  # Forme (m, rank)
+        H_float = ica.mixing_.T  # Forme (rank, n)
+    elif method == "lu":
+        P, L, U = lu(X)
 
+        W_full = P @ L
+
+        W_float = W_full[:, :rank]  # Truncation of the array
+        H_float = U[:rank, :]  # Truncation of the array
+
+    elif method == "qr":
+        Q, R = qr(X, mode='economic')
+
+        W_float = Q[:, :rank]  # Truncation of the array
+        H_float = R[:rank, :]  # Trunction of the array
     else:
-        raise ValueError("Méthode doit être 'nmf' ou 'svd'.")
+        W_float = np.random.randint(lower_w, higher_w + 1, (m, rank))
+        H_float = np.random.randint(lower_h, higher_h + 1, (rank, n))
 
-    # 1. Arrondi aux entiers (Quantification)
     W_entier = np.round(W_float).astype(int)
     H_entier = np.round(H_float).astype(int)
 
-    # 2. Clamping pour respecter les bornes de la métaheuristique
-    # C'est crucial pour que ces solutions soient dans l'espace de recherche valide.
     W_clamped = np.clip(W_entier, lower_w, higher_w)
     H_clamped = np.clip(H_entier, lower_h, higher_h)
 
-    return W_clamped, H_clamped
-
-def initiate_randomly(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, count):
-    population = []
-    for i in range(count):
-        # Utilisation de np.random.randint pour les valeurs entières dans les bornes
-        w = np.random.randint(lower_w, higher_w + 1, (m, rank))
-        h = np.random.randint(lower_h, higher_h + 1, (rank, n))
-        sol = Solution(w, h)
-        sol.compute_score(X)
-        population.append(sol)
-
-    return population
-
-
-def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h):
-    population = None
-
-    # --- Solutions basées sur NMF/SVD ---
-    method = 'nmf' if np.all(X >= 0) else 'svd'
-
-    if random.random() < 0.3:
-        try:
-            W_fact, H_fact = factorize_and_quantize(
-                X, rank, lower_w, higher_w, lower_h, higher_h, method=method
-            )
-            sol_fact = Solution(W_fact, H_fact)
-            sol_fact.compute_score(X)
-
-            population = sol_fact
-
-        except Exception as e:
-            print(f"Erreur lors de la factorisation () : {e}")
-    else:
-        w = np.random.randint(lower_w, higher_w + 1, (m, rank))
-        h = np.random.randint(lower_h, higher_h + 1, (rank, n))
-        sol = Solution(w, h)
-        sol.compute_score(X)
-        population = sol
-
-    return population
+    sol = Solution(W_clamped, H_clamped)
+    sol.compute_score(X)
+    print("Method : ", method, "Score : ", sol.score)
+    return sol
