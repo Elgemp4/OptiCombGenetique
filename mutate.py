@@ -11,14 +11,13 @@ def loop(min_value: int, max_value: int, value: int) -> int:
 
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
-                             X: np.ndarray, iterations=500):
+                             X: np.ndarray, iterations=1000):
     W = solution.get_W()
     H = solution.get_H()
 
     M, R = W.shape
     R, N = H.shape
 
-    best = solution.score
     current_best_score = solution.score
 
     for _ in range(iterations):
@@ -39,6 +38,7 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
             if solution.score < current_best_score:
                 current_best_score = solution.score
+            else:
                 solution.change_w_at(i, r, old_val)
 
         else:
@@ -57,6 +57,7 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
             if solution.score < current_best_score:
                 current_best_score = solution.score
+            else:
                 solution.change_h_at(r, j, old_val)
 
     return solution
@@ -72,7 +73,7 @@ def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int,
     :param X:
     :return:
     """
-    for i in range(5):
+    for i in range(1):
         L = solution.residu
         L_abs = np.abs(L)
         W = solution.get_W()

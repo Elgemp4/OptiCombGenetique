@@ -3,7 +3,6 @@ import time
 from concurrent.futures.process import ProcessPoolExecutor
 from typing import Callable
 
-import matplotlib.pyplot as plt
 from parser import read_file
 from plot import plot_score_evolution
 from solution import Solution

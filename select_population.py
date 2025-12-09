@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def roulette_selection(population, count, factor=1.1):
+def roulette_selection(population, count, factor=0.8 ):
     """
     Roulette selection, the lower the factor argument, the more less idea solutions will be chosed
     :param population:

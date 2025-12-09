@@ -40,7 +40,7 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
             W_curr = np.clip(np.round(W_float), lower_w, higher_w).astype(int)
             H_curr = np.clip(np.round(H_float), lower_h, higher_h).astype(int)
 
-            for _ in range(5):
+            for _ in range(20):
                 # Fix H, Solve W:  H.T * W.T = X.T
                 # lstsq solves Ax = B. It's fast and robust (handles negatives).
                 W_res = scipy.linalg.lstsq(H_curr.T, X.T)
