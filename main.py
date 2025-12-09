@@ -23,7 +23,7 @@ def enter_point(file):
                    crossover=uniform_crossover,
                    initiate_population=generate_smart_solution,
                    mutate_search=stochastic_hill_climbing,
-                   mutate_intensify=stochastic_hill_climbing,
+                   mutate_intensify=nnls_mutation,
                    reproduce_count=2,
                    select_count=200,
                    initial_count=200)
