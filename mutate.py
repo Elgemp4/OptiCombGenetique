@@ -11,7 +11,7 @@ def loop(min_value: int, max_value: int, value: int) -> int:
 
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
-                             X: np.ndarray, iterations=1000):
+                             X: np.ndarray, iterations=3500):
     W = solution.get_W()
     H = solution.get_H()
 
