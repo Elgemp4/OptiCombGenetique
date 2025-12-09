@@ -73,7 +73,7 @@ def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int,
     :param X:
     :return:
     """
-    for i in range(1):
+    for i in range(5):
         L = solution.residu
         L_abs = np.abs(L)
         W = solution.get_W()

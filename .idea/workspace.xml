@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Some more refactoring">
+    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="WORKS WELL">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/genetic.py" beforeDir="false" afterPath="$PROJECT_DIR$/genetic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initiation.py" beforeDir="false" afterPath="$PROJECT_DIR$/initiation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mutate.py" beforeDir="false" afterPath="$PROJECT_DIR$/mutate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/select_population.py" beforeDir="false" afterPath="$PROJECT_DIR$/select_population.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -234,7 +231,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765314747677</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="WORKS WELL">
+      <option name="closed" value="true" />
+      <created>1765316892038</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1765316892038</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -249,6 +254,7 @@
     <MESSAGE value="Refactor initiation.py" />
     <MESSAGE value="Removed unneeded comments" />
     <MESSAGE value="Some more refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Some more refactoring" />
+    <MESSAGE value="WORKS WELL" />
+    <option name="LAST_COMMIT_MESSAGE" value="WORKS WELL" />
   </component>
 </project>
