@@ -12,17 +12,17 @@ def plot_images_comparison(X, x_recontructed):
 
     plt.subplot(1, 3, 1)
     plt.title("Originale (X)")
-    plt.imshow(X, cmap='viridis', aspect='auto')
+    plt.imshow(X, cmap='viridis', aspect=X.shape[1] / X.shape[0])
     plt.colorbar()
 
     plt.subplot(1, 3, 2)
     plt.title("Reconstruction (W x H)")
-    plt.imshow(x_recontructed, cmap='viridis', aspect='auto')
+    plt.imshow(x_recontructed, cmap='viridis', aspect=X.shape[1] / X.shape[0])
     plt.colorbar()
 
     plt.subplot(1, 3, 3)
-    plt.title("Différence (L = X - W X H)")
-    plt.imshow(np.abs(X - x_recontructed), cmap='magma', aspect='auto')
+    plt.title("Différence (L = X - W x H)")
+    plt.imshow(np.abs(X - x_recontructed), cmap='magma', aspect=X.shape[1] / X.shape[0])
     plt.colorbar()
 
     plt.tight_layout()

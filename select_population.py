@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-def roulette_selection(population, count, factor=0.8 ):
+def roulette_selection(population, count, factor=1.1):
     """
     Roulette selection, the lower the factor argument, the more less idea solutions will be chosed
     :param population:
@@ -23,6 +23,9 @@ def roulette_selection(population, count, factor=0.8 ):
 def select_replacement(combined_population, max_size):
     """
     Selects the best individuals, removing duplicates.
+    :param combined_population:
+    :param max_size:
+    :return:
     """
     sorted_population = sorted(combined_population, key=lambda x: x.score)
 
@@ -32,7 +35,6 @@ def select_replacement(combined_population, max_size):
     for individual in sorted_population:
         individual_hash = hash(individual)
 
-        # Check for uniqueness and size limit
         if individual_hash not in seen_hashes and len(final_population) < max_size:
             final_population.append(individual)
             seen_hashes.add(individual_hash)

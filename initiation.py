@@ -4,62 +4,102 @@ from scipy.linalg import lu, qr
 from solution import Solution
 from sklearn.decomposition import NMF, TruncatedSVD, PCA, FastICA
 
-def initiate_algo(X, m, n, rank, lower_w, higher_w, lower_h, higher_h, method):
-    if method == 'nmf':
-        # If NMF is not available (because there is a negative value in X, then use SVD)
-        if (X < 0).any():
-            svd = TruncatedSVD(n_components=rank)
-            W_float = svd.fit_transform(X)
-            Sigma = np.diag(svd.singular_values_)
-            H_float = svd.components_
+import numpy as np
+import scipy.linalg
+from solution import Solution  # Assurez-vous que l'import correspond à votre projet
 
-            W_float = W_float @ np.sqrt(Sigma)
-            H_float = np.sqrt(Sigma) @ H_float
-        else:
-            model = NMF(n_components=rank, init='random', max_iter=50000)
-            W_float = model.fit_transform(X)
-            H_float = model.components_
+import numpy as np
+import scipy.linalg
+import random
+from solution import Solution
 
-    elif method == 'svd':
-        svd = TruncatedSVD(n_components=rank)
-        W_float = svd.fit_transform(X)
-        Sigma = np.diag(svd.singular_values_)
-        H_float = svd.components_
 
-        W_float = W_float @ np.sqrt(Sigma)
-        H_float = np.sqrt(Sigma) @ H_float
-    elif method == 'pca':
-        pca = PCA(n_components=rank)
-        W_float = pca.fit_transform(X)
-        H_float = pca.components_
-    elif method == 'ica':
-        ica = FastICA(n_components=rank, max_iter=1000, random_state=42)
-        W_float = ica.fit_transform(X)  # Forme (m, rank)
-        H_float = ica.mixing_.T  # Forme (rank, n)
-    elif method == "lu":
-        P, L, U = lu(X)
+def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, higher_w: int, lower_h: int,
+                            higher_h: int) -> Solution:
 
-        W_full = P @ L
+    # Decision roll
+    strategy_roll = random.random()
 
-        W_float = W_full[:, :rank]  # Truncation of the array
-        H_float = U[:rank, :]  # Truncation of the array
+    # ====================================================
+    # STRATEGY 1: SVD (Singular Value Decomposition) ~ 5%
+    # ====================================================
+    if strategy_roll < 0.15:
+        try:
+            # SVD separates X into U * S * Vt
+            U, S, Vt = scipy.linalg.svd(X, full_matrices=False)
 
-    elif method == "qr":
-        Q, R = qr(X, mode='economic')
+            # We keep only the top r components
+            # We distribute the square root of Sigma (S) to balance values between W and H
+            sqrt_S = np.sqrt(S[:r])
 
-        W_float = Q[:, :rank]  # Truncation of the array
-        H_float = R[:rank, :]  # Trunction of the array
-    else:
-        W_float = np.random.randint(lower_w, higher_w + 1, (m, rank))
-        H_float = np.random.randint(lower_h, higher_h + 1, (rank, n))
+            W_float = U[:, :r] * sqrt_S
+            H_float = sqrt_S[:, np.newaxis] * Vt[:r, :]
 
-    W_entier = np.round(W_float).astype(int)
-    H_entier = np.round(H_float).astype(int)
+            # SVD gives the best reconstruction, but violates integer/bounds constraints
+            # We force it back into the box
+            W_curr = np.clip(np.round(W_float), lower_w, higher_w).astype(int)
+            H_curr = np.clip(np.round(H_float), lower_h, higher_h).astype(int)
 
-    W_clamped = np.clip(W_entier, lower_w, higher_w)
-    H_clamped = np.clip(H_entier, lower_h, higher_h)
+            for _ in range(5):
+                # Fix H, Solve W:  H.T * W.T = X.T
+                # lstsq solves Ax = B. It's fast and robust (handles negatives).
+                W_res = scipy.linalg.lstsq(H_curr.T, X.T)
+                W_curr = W_res[0].T  # Transpose back
 
-    sol = Solution(W_clamped, H_clamped)
+                # Clamp immediately
+                W_curr = np.clip(np.round(W_curr), lower_w, higher_w)
+
+                # Fix W, Solve H:  W * H = X
+                H_res = scipy.linalg.lstsq(W_curr, X)
+                H_curr = H_res[0]
+
+                # Clamp immediately
+                H_curr = np.clip(np.round(H_curr), lower_h, higher_h)
+
+            sol = Solution(W_curr.astype(int), H_curr.astype(int))
+            sol.compute_score(X)
+            return sol
+        except Exception:
+            # If SVD fails (rare convergence issue), fallback to Pure Random
+            pass
+
+            # ====================================================
+    # STRATEGY 2: ALS Hill Climbing (Smart Random) ~ 65%
+    # ====================================================
+    if strategy_roll < 0.70:
+        # 1. Random Start
+        W_curr = np.random.randint(lower_w, higher_w + 1, size=(M, r)).astype(float)
+        H_curr = np.random.randint(lower_h, higher_h + 1, size=(r, N)).astype(float)
+
+        # 2. Fast Optimization Loop (5 iterations)
+        # Uses Least Squares to quickly fit the random matrices to X
+        for _ in range(20):
+            # Fix H, Solve W:  H.T * W.T = X.T
+            # lstsq solves Ax = B. It's fast and robust (handles negatives).
+            W_res = scipy.linalg.lstsq(H_curr.T, X.T)
+            W_curr = W_res[0].T  # Transpose back
+
+            # Clamp immediately
+            W_curr = np.clip(np.round(W_curr), lower_w, higher_w)
+
+            # Fix W, Solve H:  W * H = X
+            H_res = scipy.linalg.lstsq(W_curr, X)
+            H_curr = H_res[0]
+
+            # Clamp immediately
+            H_curr = np.clip(np.round(H_curr), lower_h, higher_h)
+
+        sol = Solution(W_curr.astype(int), H_curr.astype(int))
+        sol.compute_score(X)
+        return sol
+    # ====================================================
+    # STRATEGY 3: Pure Random (Chaos) ~ 30%
+    # ====================================================
+    # Standard random generation within bounds
+    W_rand = np.random.randint(lower_w, higher_w + 1, size=(M, r))
+    H_rand = np.random.randint(lower_h, higher_h + 1, size=(r, N))
+
+
+    sol = Solution(W_rand, H_rand)
     sol.compute_score(X)
-    print("Method : ", method, "Score : ", sol.score)
     return sol

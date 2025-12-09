@@ -4,11 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Removed unneeded comments">
+    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Some more refactoring">
+      <change afterPath="$PROJECT_DIR$/inputs/test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inputs/testmatrice3_houdain_547x745_r10_m1616m1616v2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/inputs/testmatrice3_houdain_547x745_r10_m1616m1616v3.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/genetic.py" beforeDir="false" afterPath="$PROJECT_DIR$/genetic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initiation.py" beforeDir="false" afterPath="$PROJECT_DIR$/initiation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mutate.py" beforeDir="false" afterPath="$PROJECT_DIR$/mutate.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plot.py" beforeDir="false" afterPath="$PROJECT_DIR$/plot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/select_population.py" beforeDir="false" afterPath="$PROJECT_DIR$/select_population.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/solution.py" beforeDir="false" afterPath="$PROJECT_DIR$/solution.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,11 +70,16 @@
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "clean",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/home/elgem/PycharmProjects/OptiCombGenetique/main.py",
+    "last_opened_file_path": "C:/Users/elgem/PycharmProjects/OptiCombGenetique/inputs",
     "settings.editor.selected.configurable": "configurable.group.appearance",
     "to.speed.mode.migration.done": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\elgem\PycharmProjects\OptiCombGenetique\inputs" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main.py " type="PythonConfigurationType" factoryName="Python">
       <module name="OptiCombGenetique" />
@@ -203,7 +215,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765229461472</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Some more refactoring">
+      <option name="closed" value="true" />
+      <created>1765231354221</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1765231354221</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -217,6 +237,7 @@
     <MESSAGE value="Fixed crossover.py" />
     <MESSAGE value="Refactor initiation.py" />
     <MESSAGE value="Removed unneeded comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed unneeded comments" />
+    <MESSAGE value="Some more refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some more refactoring" />
   </component>
 </project>

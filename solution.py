@@ -23,9 +23,6 @@ class Solution:
 
     def get_H(self) -> np.ndarray:
         return self.H
-
-    ## ----------------------------------------------------
-    ## MÉTHODES AVEC CALCUL INCRÉMENTAL
     ## ----------------------------------------------------
 
     def change_w_at(self, i: int, r: int, new_value: float):

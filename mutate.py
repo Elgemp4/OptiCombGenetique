@@ -1,11 +1,8 @@
 import random
-
 import numpy as np
+import scipy
+from scipy.optimize import lsq_linear
 
-import solution
-from solution import Solution
-import random
-import numpy as np
 from solution import Solution
 
 
@@ -21,6 +18,7 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
     M, R = W.shape
     R, N = H.shape
 
+    best = solution.score
     current_best_score = solution.score
 
     for _ in range(iterations):
@@ -41,7 +39,6 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
             if solution.score < current_best_score:
                 current_best_score = solution.score
-            else:
                 solution.change_w_at(i, r, old_val)
 
         else:
@@ -60,105 +57,67 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
             if solution.score < current_best_score:
                 current_best_score = solution.score
-            else:
                 solution.change_h_at(r, j, old_val)
 
     return solution
 
-def gradient_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
+def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
     """
-    Effectue une mutation par bloc (ligne de W ou colonne de H) en appliquant
-    un pas d'optimisation vectoriel.
+    Do a mutation by row or column (depending on wheter we modify W or H)
+    :param solution:
+    :param lower_w:
+    :param higher_w:
+    :param lower_h:
+    :param higher_h:
+    :param X:
+    :return:
     """
-    for i in range(10000):
-        E = solution.residu
-        E_abs = np.abs(E)
+    for i in range(5):
+        L = solution.residu
+        L_abs = np.abs(L)
         W = solution.get_W()
         H = solution.get_H()
         M, R = W.shape
         R, N = H.shape
 
-        # 1. Sélection Biaisée du Bloc à Muter (W ou H)
         if random.random() < 0.5:
-            # --- MUTATION SUR W (Ligne complète) ---
+            # Calculate the erros per rows
+            error_per_row = np.sum(L_abs, axis=1)
 
-            # a. Sélection Biaisée de la LIGNE 'i' (la plus grande erreur)
-            error_per_row = np.sum(E_abs, axis=1)
+            #THis line is to avoid division by 0
             if np.sum(error_per_row) == 0:
                 row_index = np.random.randint(0, M)
-            else:
+            else: #Calculate the probability for each row to be optimized with gradient descent
                 probabilities = error_per_row / np.sum(error_per_row)
                 row_index = np.random.choice(M, p=probabilities)
 
-            # b. Calcul du Pas Optimal VECTORIEL pour la ligne W[i, :]
+            lb = np.full(R, lower_w)
+            ub = np.full(R, higher_w)
 
-            # Le pas optimal de descente de gradient pour une ligne i est:
-            # W_i_opt = W_i_old + (E_i @ H^T) @ (H @ H^T)^-1
-            # Pour simplifier et accélérer, nous allons utiliser une approche inspirée de la NMF.
+            #new_W_row_float = lsq_linear(H.T, X[row_index, :], bounds=(lb, ub)).x
+            new_W_row_float = np.linalg.lstsq(H.T, X[row_index, :], rcond=None)[0]
 
-            # Gradient (Pente) : -2 * E[i, :] @ H.T
-            # Terme_Gradient est le vecteur (1 x R) de toutes les dérivées partielles pour la ligne i
-            Terme_Gradient_Vec = E[row_index, :] @ H.T
-
-            # Matrice de Courbure (Hessienne) : 2 * H @ H.T
-            Terme_Courbure_Mat = H @ H.T
-
-            # c. Calcul du Mouvement (Résolution du système linéaire)
-            # La valeur optimale est obtenue en résolvant le système (Terme_Courbure_Mat @ Delta_W_i) = Terme_Gradient_Vec
-
-            # Sécurité : vérifier que la matrice de courbure est bien conditionnée
-            try:
-                # np.linalg.solve trouve le déplacement optimal pour la ligne W[i, :]
-                Delta_W_Vec = np.linalg.solve(Terme_Courbure_Mat, Terme_Gradient_Vec)
-
-                # Application du Pas
-                new_W_row_float = W[row_index, :] + Delta_W_Vec
-            except np.linalg.LinAlgError:
-                # En cas de problème de matrice singulière, utiliser la méthode précédente
-                print("Avertissement: Matrice de courbure singulière. Utilisation de la mutation aléatoire.")
-                return solution  # On peut choisir de ne rien faire ou d'utiliser la mutation aléatoire simple ici
-
-            # d. Clamping et Mise à Jour
             new_W_row_int = np.round(new_W_row_float).astype(int)
-
-            # Appliquer le clamping à tous les éléments de la ligne
             new_W_row_clamped = np.clip(new_W_row_int, lower_w, higher_w)
-
-            # Mise à jour de la ligne entière (cette mise à jour doit être implémentée dans Solution)
             solution.change_w_row_at(row_index, new_W_row_clamped)
 
 
         else:
-            # --- MUTATION SUR H (Colonne complète) ---
-
-            # a. Sélection Biaisée de la COLONNE 'j'
-            error_per_col = np.sum(E_abs, axis=0)
+            error_per_col = np.sum(L_abs, axis=0)
             if np.sum(error_per_col) == 0:
                 col_index = np.random.randint(0, N)
             else:
                 probabilities = error_per_col / np.sum(error_per_col)
                 col_index = np.random.choice(N, p=probabilities)
 
-            # b. Calcul du Pas Optimal VECTORIEL pour la colonne H[:, j]
+            lb = np.full(R, lower_h)
+            ub = np.full(R, higher_h)
 
-            # Terme_Gradient est le vecteur (R x 1)
-            Terme_Gradient_Vec = W.T @ E[:, col_index]
+            #new_H_col_float = lsq_linear(W, X[:, col_index], bounds=(lb, ub)).x
+            new_H_col_float = np.linalg.lstsq(W, X[:, col_index], rcond=None)[0]
 
-            # Matrice de Courbure : W.T @ W
-            Terme_Courbure_Mat = W.T @ W
-
-            try:
-                Delta_H_Vec = np.linalg.solve(Terme_Courbure_Mat, Terme_Gradient_Vec)
-                new_H_col_float = H[:, col_index] + Delta_H_Vec
-            except np.linalg.LinAlgError:
-                print("Avertissement: Matrice de courbure singulière. Utilisation de la mutation aléatoire.")
-                return solution
-
-            # c. Clamping et Mise à Jour
             new_H_col_int = np.round(new_H_col_float).astype(int)
             new_H_col_clamped = np.clip(new_H_col_int, lower_h, higher_h)
-
-            # Mise à jour de la colonne entière (doit être implémentée dans Solution)
             solution.change_h_col_at(col_index, new_H_col_clamped)
 
         return solution

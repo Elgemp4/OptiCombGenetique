@@ -3,9 +3,9 @@ from pathlib import Path
 
 from crossover import  uniform_crossover
 from genetic import genetic
-from initiation import  initiate_algo
+from initiation import  generate_smart_solution
 from mutate import stochastic_hill_climbing, \
-    gradient_mutation
+    nnls_mutation
 from parser import read_file, write_output
 from plot import plot_images_comparison
 from select_population import roulette_selection, select_replacement
@@ -21,25 +21,23 @@ def enter_point(file):
                    select_replacement=select_replacement,
                    duration=10,
                    crossover=uniform_crossover,
-                   initiate_population=initiate_algo,
-                   mutate_search=gradient_mutation,
+                   initiate_population=generate_smart_solution,
+                   mutate_search=stochastic_hill_climbing,
                    mutate_intensify=stochastic_hill_climbing,
-                   reproduce_count=14,
+                   reproduce_count=2,
                    select_count=200,
-                   initial_count=300)
+                   initial_count=200)
 
 
     X, m, n, rank, lower_w, upper_w, lower_h, upper_h = read_file(file)
 
-    print(best.get_W())
-    print(best.get_H())
-    print(best.score)
     best.compute_score(X)
-    print(best.score)
-
-    print(solutionIsFeasible(best.get_W(), best.get_H(), rank, lower_w, upper_w, lower_h, upper_h))
-
-    write_output(f"./output/{Path(file).stem}.out.txt", best)
+    output = f"./output/{Path(file).stem}.out.txt"
+    print("================= Best solution found ! ========================")
+    print(f"Score : {best.score}")
+    print(f"Is feasible : {solutionIsFeasible(best.get_W(), best.get_H(), rank, lower_w, upper_w, lower_h, upper_h)}")
+    print(f"Output file : {output}")
+    write_output(output, best)
 
     x_recontructed = best.get_W() @ best.get_H()
     plot_images_comparison(X, x_recontructed)

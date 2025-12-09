@@ -13,11 +13,11 @@ def create_one_individu_process(args):
     """
     Create one individual and computes it's score.
     """
-    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, method) = args
+    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X) = args
 
     random.seed(seed_val)
 
-    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h, method)
+    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h)
 
     return sol
 
@@ -65,16 +65,8 @@ def genetic(file, duration,
             methods = ["nmf", "svd", "lu", "qr", "ica", "pca"]
             for i in range(initial_count):
                 # We pass 'time + i' to ensure every worker gets a unique random seed
-                if i < len(methods):
-                    method = methods[i]
-                else:
-                    if random.random() < .1:
-                        method="nmf"
-                    else:
-                        method = "random"
-
                 seed_val = time.time() + i
-                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, method))
+                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X))
 
             population = list(executor.map(create_one_individu_process, init_tasks))
 
