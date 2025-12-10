@@ -21,6 +21,8 @@ def uniform_crossover(parent1, parent2, m,n, rank):
         child1 = np.empty((rank, width))
         child2 = np.empty((rank, width))
 
+
+
         # Creating child 1
         child1[:, mask] = parent1[:, mask] #Inherit genes from parent 1
         child1[:, ~mask] = parent2[:, ~mask] #Inherit genes from parent 2
