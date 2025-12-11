@@ -31,11 +31,8 @@ def process_children_process(args):
     """
     (child, mutation_func, lower_w, upper_w, lower_h, upper_h, X) = args
     child.compute_score(X)
-    # 1. Mutate
-    # (No need to re-seed here as we are transforming existing data)
     child = mutation_func(child, lower_w, upper_w, lower_h, upper_h, X)
 
-    # 2. Score
     child.compute_score(X)
 
     return child
