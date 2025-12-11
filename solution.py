@@ -42,27 +42,16 @@ class Solution:
         if delta == 0.0:
             return
 
-        # --- TERMES DE LA FORMULE L' = L - 2*delta*Terme1 + delta^2*Terme2 ---
-
-        # E_i est la ligne i du résidu (E[i, :])
         E_i = self.residu[i, :]
-        # H_r est la ligne r de H (H[r, :])
         H_r = self.H[r, :]
-
-        # Terme 1: Somme des (E_ik * H_rk)
         Terme1 = np.sum(E_i * H_r)
 
-        # Terme 2: Somme des (H_rk)^2
         Terme2 = np.sum(H_r ** 2)
 
-        # 2. Mise à jour du score L' = L - 2*delta*Terme1 + delta^2*Terme2
         new_score = self.score - 2 * delta * Terme1 + delta ** 2 * Terme2
 
-        # 3. Mise à jour du résidu (E)
-        # La ligne i du résidu change de -delta * H[r, :]
         self.residu[i, :] -= delta * H_r
 
-        # 4. Appliquer le changement et mettre à jour le score
         self.W[i, r] = new_value
         self.score = round(new_score)
 
@@ -75,34 +64,23 @@ class Solution:
         if self.score is None or self.residu is None:
             raise ValueError("Score and residu must be initialized with compute_score(X) before calling change_h_at.")
 
-        # 1. Calculer le changement (delta)
         delta = new_value - self.H[r, j]
 
         if delta == 0.0:
             return
 
-        # --- TERMES DE LA FORMULE L' = L - 2*delta*Terme1 + delta^2*Terme2 ---
 
-        # E_j est la colonne j du résidu (E[:, j])
         E_j = self.residu[:, j]
-        # W_r est la colonne r de W (W[:, r])
         W_r = self.W[:, r]
 
-        # Terme 1: Somme des (E_ij * W_ir)
-        # Note : On utilise la transposée de la formule pour le changement de H
         Terme1 = np.sum(E_j * W_r)
 
-        # Terme 2: Somme des (W_ir)^2
         Terme2 = np.sum(W_r ** 2)
 
-        # 2. Mise à jour du score L' = L - 2*delta*Terme1 + delta^2*Terme2
         new_score = self.score - 2 * delta * Terme1 + delta ** 2 * Terme2
 
-        # 3. Mise à jour du résidu (E)
-        # La colonne j du résidu change de -delta * W[:, r]
         self.residu[:, j] -= delta * W_r
 
-        # 4. Appliquer le changement et mettre à jour le score
         self.H[r, j] = new_value
         self.score = round(new_score)
 
@@ -117,19 +95,12 @@ class Solution:
         old_row = self.W[i, :]
         self.W[i, :] = new_row
 
-        # Mise à jour incrémentale du résidu E pour la ligne i :
-        # E_new = E_old - (W_i_new @ H) + (W_i_old @ H)
-        # E_new = E_old + (W_i_old - W_i_new) @ H
-
         delta_W_row = old_row - new_row
 
-        # Calcul de la modification (1 x R) @ (R x N) = (1 x N)
         update_term = delta_W_row @ self.H
 
-        # Mise à jour vectorielle de la ligne i du résidu
         self.residu[i, :] += update_term
 
-        # Le score DOIT être recalculé après la mise à jour incrémentale
         self.compute_score_from_residu()
 
     def change_h_col_at(self, j: int, new_col: np.ndarray):
@@ -137,20 +108,15 @@ class Solution:
         old_col = self.H[:, j]
         self.H[:, j] = new_col
 
-        # Mise à jour incrémentale de la colonne j du résidu :
-        # E_new[:, j] = E_old[:, j] + W @ (H_old[:, j] - H_new[:, j])
 
         delta_H_col = old_col - new_col
 
-        # Calcul de la modification (M x R) @ (R x 1) = (M x 1)
         update_term = self.W @ delta_H_col
 
-        # Mise à jour vectorielle de la colonne j du résidu
         self.residu[:, j] += update_term
 
         self.compute_score_from_residu()
 
-    # Vous aurez besoin d'une nouvelle fonction pour mettre à jour le score à partir du résidu
     def compute_score_from_residu(self):
         """Recalcule le score à partir du résidu E après une modification incrémentale."""
         self.score = round(np.linalg.norm(self.residu, ord='fro') ** 2)
