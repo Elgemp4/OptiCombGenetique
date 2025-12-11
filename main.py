@@ -5,7 +5,7 @@ from crossover import  uniform_crossover
 from genetic import genetic
 from initiation import  generate_smart_solution
 from mutate import stochastic_hill_climbing, \
-    nnls_mutation
+    lsq_mutation
 from parser import read_file, write_output
 from plot import plot_images_comparison
 from select_population import roulette_selection, select_replacement
@@ -22,7 +22,7 @@ def enter_point(file):
                    duration=10,
                    crossover=uniform_crossover,
                    initiate_population=generate_smart_solution,
-                   mutate_search=nnls_mutation,
+                   mutate_search=lsq_mutation,
                    mutate_intensify=stochastic_hill_climbing,
                    reproduce_count=100,
                    select_count=250,

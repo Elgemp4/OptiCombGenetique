@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import scipy
-from scipy.optimize import lsq_linear
 
 from solution import Solution
 
@@ -62,7 +61,7 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
     return solution
 
-def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
+def lsq_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
     """
     Do a mutation by row or column (depending on wheter we modify W or H)
     :param solution:

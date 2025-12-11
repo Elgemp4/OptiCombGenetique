@@ -4,17 +4,20 @@ import numpy as np
 
 class Solution:
     def __init__(self, W: np.ndarray, H: np.ndarray):
-        self.residu = None  # Matrice d'erreur E = X - W@H
+        self.residu = None
         self.W = W
         self.H = H
-        self.score = None  # L = ||E||_F^2
+        self.score = None
 
     def get_score(self) -> float:
         return self.score
 
     def compute_score(self, X):
-        """Calcule le score initial et le résidu (à appeler au moins une fois)."""
-        # Assurez-vous que fobj renvoie bien (score, residu)
+        """
+        Compute the score of the solution
+        :param X:
+        :return:
+        """
         self.score, self.residu = fobj(X, self.W, self.H)
         self.score = round(self.score)
 
@@ -23,22 +26,20 @@ class Solution:
 
     def get_H(self) -> np.ndarray:
         return self.H
-    ## ----------------------------------------------------
 
     def change_w_at(self, i: int, r: int, new_value: float):
         """
-        Modifie W[i, r] et met à jour incrémentalement le score et le résidu.
-        i : ligne de W (correspond à la ligne de X)
-        r : colonne de W (correspond au rang)
+        Change the row for W and incrementaly recompute the score
+        :param i:
+        :param r:
+        :param new_value:
+        :return:
         """
         if self.score is None or self.residu is None:
-            # Sécurité : recalcule si les valeurs ne sont pas initialisées
             raise ValueError("Score and residu must be initialized with compute_score(X) before calling change_w_at.")
 
-        # 1. Calculer le changement (delta)
         delta = new_value - self.W[i, r]
 
-        # S'il n'y a pas de changement, ne rien faire.
         if delta == 0.0:
             return
 
@@ -57,9 +58,11 @@ class Solution:
 
     def change_h_at(self, r: int, j: int, new_value: float):
         """
-        Modifie H[r, j] et met à jour incrémentalement le score et le résidu.
-        r : ligne de H (correspond au rang)
-        j : colonne de H (correspond à la colonne de X)
+        Change the column for H and incrementaly recompute the score
+        :param r:
+        :param j:
+        :param new_value:
+        :return:
         """
         if self.score is None or self.residu is None:
             raise ValueError("Score and residu must be initialized with compute_score(X) before calling change_h_at.")
@@ -69,15 +72,14 @@ class Solution:
         if delta == 0.0:
             return
 
-
         E_j = self.residu[:, j]
         W_r = self.W[:, r]
 
-        Terme1 = np.sum(E_j * W_r)
+        first_term = np.sum(E_j * W_r)
 
-        Terme2 = np.sum(W_r ** 2)
+        second_term = np.sum(W_r ** 2)
 
-        new_score = self.score - 2 * delta * Terme1 + delta ** 2 * Terme2
+        new_score = self.score - 2 * delta * first_term + delta ** 2 * second_term
 
         self.residu[:, j] -= delta * W_r
 
@@ -91,7 +93,12 @@ class Solution:
         return new
 
     def change_w_row_at(self, i: int, new_row: np.ndarray):
-        """Met à jour la ligne i de W et le résidu E de manière incrémentale."""
+        """
+        Change a single value at a random position in H and incrementaly recompute the score
+        :param i:
+        :param new_row:
+        :return:
+        """
         old_row = self.W[i, :]
         self.W[i, :] = new_row
 
@@ -104,7 +111,12 @@ class Solution:
         self.compute_score_from_residu()
 
     def change_h_col_at(self, j: int, new_col: np.ndarray):
-        """Met à jour la colonne j de H et le résidu E de manière incrémentale."""
+        """
+        Change a single value at a random position in H and incrementaly recompute the score
+        :param j:
+        :param new_col:
+        :return:
+        """
         old_col = self.H[:, j]
         self.H[:, j] = new_col
 
@@ -118,7 +130,11 @@ class Solution:
         self.compute_score_from_residu()
 
     def compute_score_from_residu(self):
-        """Recalcule le score à partir du résidu E après une modification incrémentale."""
+        """
+        Recompute the score after a change
+
+        :return:
+        """
         self.score = round(np.linalg.norm(self.residu, ord='fro') ** 2)
 
     def __eq__(self, other):

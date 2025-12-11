@@ -16,9 +16,22 @@ from solution import Solution
 
 def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, higher_w: int, lower_h: int,
                             higher_h: int) -> Solution:
+
+    """
+    Generate one of the initial solution randomly, or thanks to SVD.
+    :param X:
+    :param M:
+    :param N:
+    :param r:
+    :param lower_w:
+    :param higher_w:
+    :param lower_h:
+    :param higher_h:
+    :return:
+    """
     strategy_roll = random.random()
 
-    if strategy_roll < 0.15:
+    if strategy_roll < 0.05:
         try:
             U, S, Vt = scipy.linalg.svd(X, full_matrices=False)
 
@@ -32,7 +45,7 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
 
             for _ in range(20):
                 W_res = scipy.linalg.lstsq(H_curr.T, X.T)
-                W_curr = W_res[0].T  # Transpose back
+                W_curr = W_res[0].T
 
                 W_curr = np.clip(np.round(W_curr), lower_w, higher_w)
 
