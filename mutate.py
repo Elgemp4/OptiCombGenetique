@@ -86,6 +86,7 @@ def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int,
 
             if np.sum(error_per_row) == 0:
                 row_index = np.random.randint(0, M)
+            else:
                 probabilities = error_per_row / np.sum(error_per_row)
                 row_index = np.random.choice(M, p=probabilities)
 
