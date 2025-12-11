@@ -14,22 +14,25 @@ def uniform_crossover(parent1, parent2, m,n, rank):
     :param rank:
     :return:
     """
-    #Reusable crossover logic
     def array_crossover(parent1, parent2, rank, width):
+        """
+        Reusable crossover function to avoid code repetition for W and H
+        :param parent1:
+        :param parent2:
+        :param rank:
+        :param width:
+        :return:
+        """
         mask = np.random.rand(width) > 0.5
 
         child1 = np.empty((rank, width))
         child2 = np.empty((rank, width))
 
+        child1[:, mask] = parent1[:, mask]
+        child1[:, ~mask] = parent2[:, ~mask]
 
-
-        # Creating child 1
-        child1[:, mask] = parent1[:, mask] #Inherit genes from parent 1
-        child1[:, ~mask] = parent2[:, ~mask] #Inherit genes from parent 2
-
-        # Creating child 2
-        child2[:, ~mask] = parent1[:, ~mask] #Inherit genes from parent 1
-        child2[:, mask] = parent2[:, mask]  #Inherit genes from parent 2
+        child2[:, ~mask] = parent1[:, ~mask]
+        child2[:, mask] = parent2[:, mask]
 
         return child1, child2
 

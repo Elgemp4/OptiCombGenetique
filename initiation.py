@@ -1,12 +1,6 @@
-import numpy as np
-from scipy.linalg import lu, qr
+from scipy.linalg import lu
 
-from solution import Solution
-from sklearn.decomposition import NMF, TruncatedSVD, PCA, FastICA
-
-import numpy as np
 import scipy.linalg
-from solution import Solution  # Assurez-vous que l'import correspond à votre projet
 
 import numpy as np
 import scipy.linalg
@@ -16,7 +10,6 @@ from solution import Solution
 
 def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, higher_w: int, lower_h: int,
                             higher_h: int) -> Solution:
-
     """
     Generate one of the initial solution randomly, or thanks to SVD.
     :param X:

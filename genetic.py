@@ -10,7 +10,9 @@ from solution import Solution
 
 def create_one_individu_process(args):
     """
-    Create one individual and computes it's score.
+    Process to create one solution
+    :param args:
+    :return:
     """
     (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X) = args
 
@@ -23,7 +25,9 @@ def create_one_individu_process(args):
 
 def process_children_process(args):
     """
-    Mutates ONE child and computes it's score.
+    Process to mutate a child and compute its score
+    :param args:
+    :return:
     """
     (child, mutation_func, lower_w, upper_w, lower_h, upper_h, X) = args
     child.compute_score(X)
@@ -46,6 +50,21 @@ def genetic(file, duration,
             initial_count,
             reproduce_count,
             select_count):
+    """
+    The main loop for the genetic algorithm
+    :param file:
+    :param duration:
+    :param select_reproduction:
+    :param crossover:
+    :param mutate_search:
+    :param mutate_intensify:
+    :param select_replacement:
+    :param initiate_population:
+    :param initial_count:
+    :param reproduce_count:
+    :param select_count:
+    :return:
+    """
     best_solution = None
     try:
         with ProcessPoolExecutor() as executor:
@@ -61,9 +80,7 @@ def genetic(file, duration,
             last_score = 0
 
             init_tasks = []
-            methods = ["nmf", "svd", "lu", "qr", "ica", "pca"]
             for i in range(initial_count):
-                # We pass 'time + i' to ensure every worker gets a unique random seed
                 seed_val = time.time() + i
                 init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X))
 

@@ -1,6 +1,11 @@
 import numpy as np
 
 def read_file(filename="donnee.txt"):
+    """
+    Read the provided file
+    :param filename:
+    :return:
+    """
     with open(filename, 'r') as f:
         lines = f.readlines()
 
@@ -16,6 +21,12 @@ def read_file(filename="donnee.txt"):
 
 
 def write_output(filepath, solution):
+    """
+    Write the solution to the provided file
+    :param filepath:
+    :param solution:
+    :return:
+    """
     with open(filepath, 'w') as f:
         f.write(f"{solution.score}\n")
         np.savetxt(f, solution.get_W(), fmt='%d')

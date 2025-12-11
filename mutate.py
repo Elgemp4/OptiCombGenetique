@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import scipy
 
 from solution import Solution
 
@@ -11,6 +10,17 @@ def loop(min_value: int, max_value: int, value: int) -> int:
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
                              X: np.ndarray, iterations=3500):
+    """
+    Non exhaustive hill climbing algorithm
+    :param solution:
+    :param lower_w:
+    :param higher_w:
+    :param lower_h:
+    :param higher_h:
+    :param X:
+    :param iterations:
+    :return:
+    """
     W = solution.get_W()
     H = solution.get_H()
 
