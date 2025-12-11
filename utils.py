@@ -2,7 +2,7 @@ import numpy as np
 
 def fobj(X,W,H):
   residu = X-W@H
-  f = np.linalg.norm(residu,'fro')**2 #ou alors, sans NumPy : f = sum(sum((X-W@H)**2))
+  f = np.linalg.norm(residu,'fro')**2
   return f, residu
 
 def solutionIsFeasible(W,H,r,LW,UW,LH,UH):

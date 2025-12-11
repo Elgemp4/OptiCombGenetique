@@ -32,17 +32,12 @@ class Solution:
         r : colonne de W (correspond au rang)
         """
         if self.score is None or self.residu is None:
-            # Sécurité : recalcule si les valeurs ne sont pas initialisées
             raise ValueError("Score and residu must be initialized with compute_score(X) before calling change_w_at.")
 
-        # 1. Calculer le changement (delta)
         delta = new_value - self.W[i, r]
 
-        # S'il n'y a pas de changement, ne rien faire.
         if delta == 0.0:
             return
-
-        # --- TERMES DE LA FORMULE L' = L - 2*delta*Terme1 + delta^2*Terme2 ---
 
         # E_i est la ligne i du résidu (E[i, :])
         E_i = self.residu[i, :]

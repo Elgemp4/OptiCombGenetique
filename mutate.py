@@ -1,6 +1,5 @@
 import random
 import numpy as np
-import scipy
 from scipy.optimize import lsq_linear
 
 from solution import Solution
@@ -62,7 +61,7 @@ def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lo
 
     return solution
 
-def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
+def lsq_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
     """
     Do a mutation by row or column (depending on wheter we modify W or H)
     :param solution:
@@ -82,27 +81,18 @@ def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int,
         R, N = H.shape
 
         if random.random() < 0.5:
-            # Calculate the erros per rows
             error_per_row = np.sum(L_abs, axis=1)
 
-            #THis line is to avoid division by 0
             if np.sum(error_per_row) == 0:
                 row_index = np.random.randint(0, M)
-            else: #Calculate the probability for each row to be optimized with gradient descent
+            else:
                 probabilities = error_per_row / np.sum(error_per_row)
                 row_index = np.random.choice(M, p=probabilities)
-
-            lb = np.full(R, lower_w)
-            ub = np.full(R, higher_w)
-
-            #new_W_row_float = lsq_linear(H.T, X[row_index, :], bounds=(lb, ub)).x
             new_W_row_float = np.linalg.lstsq(H.T, X[row_index, :], rcond=None)[0]
 
             new_W_row_int = np.round(new_W_row_float).astype(int)
             new_W_row_clamped = np.clip(new_W_row_int, lower_w, higher_w)
             solution.change_w_row_at(row_index, new_W_row_clamped)
-
-
         else:
             error_per_col = np.sum(L_abs, axis=0)
             if np.sum(error_per_col) == 0:
@@ -110,11 +100,6 @@ def nnls_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int,
             else:
                 probabilities = error_per_col / np.sum(error_per_col)
                 col_index = np.random.choice(N, p=probabilities)
-
-            lb = np.full(R, lower_h)
-            ub = np.full(R, higher_h)
-
-            #new_H_col_float = lsq_linear(W, X[:, col_index], bounds=(lb, ub)).x
             new_H_col_float = np.linalg.lstsq(W, X[:, col_index], rcond=None)[0]
 
             new_H_col_int = np.round(new_H_col_float).astype(int)
