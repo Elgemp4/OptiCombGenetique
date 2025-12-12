@@ -7,6 +7,73 @@ from solution import Solution
 def loop(min_value: int, max_value: int, value: int) -> int:
     return ((value - min_value) % (max_value - min_value)) + min_value
 
+def block_mutation(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int, X: np.ndarray):
+    """
+    Do a BCD on the solution
+    :param solution:
+    :param lower_w:
+    :param higher_w:
+    :param lower_h:
+    :param higher_h:
+    :param X:
+    :return:
+    """
+    for i in range(100):
+        E = solution.residu
+        E_abs = np.abs(E)
+        W = solution.get_W()
+        H = solution.get_H()
+        M, R = W.shape
+        R, N = H.shape
+
+        if random.random() < 0.5:
+            error_per_row = np.sum(E_abs, axis=1)
+            if np.sum(error_per_row) == 0:
+                row_index = np.random.randint(0, M)
+            else:
+                probabilities = error_per_row / np.sum(error_per_row)
+                row_index = np.random.choice(M, p=probabilities)
+
+            gradient = E[row_index, :] @ H.T
+
+            courbure = H @ H.T
+
+            try:
+                delta = np.linalg.solve(courbure, gradient)
+
+                new_W_row_float = W[row_index, :] + delta
+            except np.linalg.LinAlgError:
+                return solution
+
+            new_W_row_int = np.round(new_W_row_float).astype(int)
+
+            new_W_row_clamped = np.clip(new_W_row_int, lower_w, higher_w)
+
+            solution.change_w_row_at(row_index, new_W_row_clamped)
+        else:
+            error_per_col = np.sum(E_abs, axis=0)
+            if np.sum(error_per_col) == 0:
+                col_index = np.random.randint(0, N)
+            else:
+                probabilities = error_per_col / np.sum(error_per_col)
+                col_index = np.random.choice(N, p=probabilities)
+
+            gradient = W.T @ E[:, col_index]
+
+            courbure = W.T @ W
+
+            try:
+                delta = np.linalg.solve(courbure, gradient)
+                new_H_col_float = H[:, col_index] + delta
+            except np.linalg.LinAlgError:
+                return solution
+
+            new_H_col_int = np.round(new_H_col_float).astype(int)
+            new_H_col_clamped = np.clip(new_H_col_int, lower_h, higher_h)
+
+            solution.change_h_col_at(col_index, new_H_col_clamped)
+
+        return solution
 
 def stochastic_hill_climbing(solution: Solution, lower_w: int, higher_w: int, lower_h: int, higher_h: int,
                              X: np.ndarray, iterations=3500):

@@ -37,7 +37,7 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
             W_curr = np.clip(np.round(W_float), lower_w, higher_w).astype(int)
             H_curr = np.clip(np.round(H_float), lower_h, higher_h).astype(int)
 
-            for _ in range(3):
+            for _ in range(50):
                 W_res = np.linalg.lstsq(H_curr.T, X.T)
                 W_curr = W_res[0].T
 
@@ -60,7 +60,7 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
         W_curr = np.random.randint(lower_w, higher_w + 1, size=(M, r)).astype(float)
         H_curr = np.random.randint(lower_h, higher_h + 1, size=(r, N)).astype(float)
 
-        for _ in range(20):
+        for _ in range(200):
             W_res = scipy.linalg.lstsq(H_curr.T, X.T)
             W_curr = W_res[0].T
 

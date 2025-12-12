@@ -42,6 +42,7 @@ def genetic(file, duration,
             crossover: Callable[[Solution, Solution, int, int, int],tuple[Solution, Solution]],
             mutate_search,
             mutate_intensify,
+            mutate_block,
             select_replacement,
             initiate_population,
             initial_count,
@@ -93,12 +94,15 @@ def genetic(file, duration,
 
                 for i in range(len(shuffled_population) -1):
                     (child1, child2) = crossover(shuffled_population[i], shuffled_population[i+1], m, n, rank)
-                    if random.random() < .5:
+                    if random.random() < .33:
                         method= "search"
                         mutate = mutate_search
-                    else:
+                    elif random.random() < .66:
                         method = "intensify"
                         mutate = mutate_intensify
+                    else:
+                        method = "block"
+                        mutate = mutate_block
 
                     evolution_tasks.append((child1, mutate, lower_w, upper_w, lower_h, upper_h, X))
                     evolution_tasks.append((child2, mutate, lower_w, upper_w, lower_h, upper_h, X))
