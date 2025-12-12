@@ -7,9 +7,8 @@ import scipy.linalg
 import random
 from solution import Solution
 
-
 def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, higher_w: int, lower_h: int,
-                            higher_h: int) -> Solution:
+                            higher_h: int, is_random: bool) -> Solution:
     """
     Generate one of the initial solution randomly, or thanks to SVD.
     :param X:
@@ -22,9 +21,11 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
     :param higher_h:
     :return:
     """
+
+    global did_svd
     strategy_roll = random.random()
 
-    if strategy_roll < 0.05:
+    if not is_random:
         try:
             U, S, Vt = scipy.linalg.svd(X, full_matrices=False)
 
@@ -36,24 +37,26 @@ def generate_smart_solution(X: np.ndarray, M: int, N:int, r: int, lower_w: int, 
             W_curr = np.clip(np.round(W_float), lower_w, higher_w).astype(int)
             H_curr = np.clip(np.round(H_float), lower_h, higher_h).astype(int)
 
-            for _ in range(20):
-                W_res = scipy.linalg.lstsq(H_curr.T, X.T)
+            for _ in range(3):
+                W_res = np.linalg.lstsq(H_curr.T, X.T)
                 W_curr = W_res[0].T
 
                 W_curr = np.clip(np.round(W_curr), lower_w, higher_w)
 
-                H_res = scipy.linalg.lstsq(W_curr, X)
+                H_res = np.linalg.lstsq(W_curr, X)
                 H_curr = H_res[0]
 
                 H_curr = np.clip(np.round(H_curr), lower_h, higher_h)
 
             sol = Solution(W_curr.astype(int), H_curr.astype(int))
             sol.compute_score(X)
+            print(sol.score)
+            did_svd = True
             return sol
         except Exception:
             pass
 
-    if strategy_roll < 0.70:
+    if strategy_roll < 0.95:
         W_curr = np.random.randint(lower_w, higher_w + 1, size=(M, r)).astype(float)
         H_curr = np.random.randint(lower_h, higher_h + 1, size=(r, N)).astype(float)
 

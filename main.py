@@ -24,7 +24,7 @@ def enter_point(file):
                    initiate_population=generate_smart_solution,
                    mutate_search=lsq_mutation,
                    mutate_intensify=stochastic_hill_climbing,
-                   reproduce_count=100,
+                   reproduce_count=200,
                    select_count=250,
                    initial_count=300)
 

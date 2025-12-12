@@ -14,11 +14,11 @@ def create_one_individu_process(args):
     :param args:
     :return:
     """
-    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X) = args
+    (seed_val, init, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, is_random) = args
 
     random.seed(seed_val)
 
-    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h)
+    sol = init(X, m, n, rank, lower_w, upper_w, lower_h, upper_h, is_random)
 
     return sol
 
@@ -79,7 +79,7 @@ def genetic(file, duration,
             init_tasks = []
             for i in range(initial_count):
                 seed_val = time.time() + i
-                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X))
+                init_tasks.append((seed_val, initiate_population, m, n, rank, lower_w, upper_w, lower_h, upper_h, X, i != 0))
 
             population = list(executor.map(create_one_individu_process, init_tasks))
 

@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Add documentation">
+    <list default="true" id="a7d9c528-43c3-4b5d-b8dd-4d7272f155bc" name="Changes" comment="Remove comments">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/genetic.py" beforeDir="false" afterPath="$PROJECT_DIR$/genetic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initiation.py" beforeDir="false" afterPath="$PROJECT_DIR$/initiation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,7 +280,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765477517282</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Remove comments">
+      <option name="closed" value="true" />
+      <created>1765477963615</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1765477963615</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -295,8 +306,8 @@
     <MESSAGE value="WORKS WELL" />
     <MESSAGE value="Remove : comments" />
     <MESSAGE value="Fix" />
-    <MESSAGE value="Remove comments" />
     <MESSAGE value="Add documentation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add documentation" />
+    <MESSAGE value="Remove comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove comments" />
   </component>
 </project>
